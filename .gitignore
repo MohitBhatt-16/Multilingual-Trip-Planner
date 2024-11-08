@@ -5,6 +5,9 @@ Trip Planner Araku.pdf
 Trip Planner Output.pdf
 main2.py
 main_flask.py
+chat.html
+chatbotimg.png
+style.css
 # Ignore all files with a specific extension
 *.log
 *.env
