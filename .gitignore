@@ -1,0 +1,14 @@
+# Ignore specific files
+
+Trip Planner Output.mp4
+Trip Planner Araku.pdf
+Trip Planner Output.pdf
+# Ignore all files with a specific extension
+*.log
+*.env
+*.mp4
+*.pdf
+*.pyc
+static /
+templates /
+__pycache__ /
