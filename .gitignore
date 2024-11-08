@@ -3,6 +3,8 @@
 Trip Planner Output.mp4
 Trip Planner Araku.pdf
 Trip Planner Output.pdf
+main2.py
+main_flask.py
 # Ignore all files with a specific extension
 *.log
 *.env
@@ -12,3 +14,4 @@ Trip Planner Output.pdf
 static /
 templates /
 __pycache__ /
+
