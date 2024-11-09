@@ -10,11 +10,11 @@ from markdownify import markdownify as md_to_text
 from main import TripCrew, TripAnswer
 from markupsafe import Markup
 from markdown import markdown
-
+import re 
 # Load environment variables
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = '0ab694f8c46f9f7ca3266ad3f4efq3'  # Replace with a secure key
+app.secret_key = '0ab694f8c46f9f7cjhbnkkn266ad3efq3'  # Replace with a secure key
 
 llm = ChatGroq(temperature=0.7)
 
@@ -98,9 +98,13 @@ def chat():
         # Translate result if needed
         markdown_text = str(result)
         translated_result = translate_to_regional(markdown_text, source_language)
-        translated_result = translated_result.replace('* ', '  ')
-        translated_response = Markup(markdown(translated_result))
 
+
+        # Fix line breaks for Markdown by replacing backslashes with two spaces and newline
+        translated_result = re.sub(r'\\\s+', '  \n', translated_result)
+
+        # Convert Markdown to HTML and ensure it's safely rendered
+        translated_response = Markup(markdown(translated_result))
         # Store trip details in the session
         session['trip_details'] = {
             'origin': origin,
@@ -114,7 +118,7 @@ def chat():
             'source_language': source_language,
             'trip_planned' : translated_response
         }
-
+        print(translated_response)
         return jsonify({"response": translated_response})
     
     else:

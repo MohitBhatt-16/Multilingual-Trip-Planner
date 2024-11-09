@@ -189,8 +189,3 @@ class TravelTasks:
     
 
     
-# Sample usage of the class
-# travel_tasks = TravelTasks()
-# task1 = travel_tasks.plan_itinerary(agent="Agent1", city="Paris", travel_dates="2024-08-01 to 2024-08-07", interests="art, food")
-# task2 = travel_tasks.identify_city(agent="Agent2", origin="New York", cities=["Paris", "London", "Rome"], interests="art, food", travel_dates="2024-08-01 to 2024-08-07")
-# task3 = travel_tasks.gather_city_info(agent="Agent3", city="Paris", travel_dates="2024-08-01 to 2024-08-07", interests="art, food")

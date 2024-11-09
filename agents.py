@@ -88,7 +88,6 @@ class TravelAgents:
             tools = [
                 SearchTools.search_internet,
                 CalculatorTools.calculate,
-                # search_tool
             ],
             verbose = True,
             llm = self.CHATGroq
@@ -109,7 +108,6 @@ class TravelAgents:
             tools = [
                 SearchTools.search_internet,
                 CalculatorTools.calculate,
-                # search_tool
             ],
             verbose = True,
             llm = self.CHATGroq
@@ -135,7 +133,6 @@ class TravelAgents:
             tools = [
                 SearchTools.search_internet,
                 CalculatorTools.calculate,
-                # search_tool
             ],
             verbose = True,
             llm = self.CHATGroq
@@ -157,8 +154,7 @@ class TravelAgents:
             ),
             tools = [
                 SearchTools.search_internet,
-                CalculatorTools.calculate,
-                # search_tool
+                CalculatorTools.calculate
             ],
             verbose = True,
             llm = self.CHATGroq
