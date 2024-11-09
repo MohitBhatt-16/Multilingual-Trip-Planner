@@ -8,19 +8,16 @@ main_flask.py
 chat.html
 chatbotimg.png
 style.css
-C:\Users\mohit_zwsxi5o\Desktop\Mohit\Trip Planner\main3.py
+\main3.py
 main2.py
 main_flask.py
 try.py
-C:\Users\mohit_zwsxi5o\Desktop\Mohit\Trip Planner\templates\chat.html
 # Ignore all files with a specific extension
 *.log
 *.env
 *.mp4
 *.pdf
 *.pyc
-/node_modules/
 
 /__pycache__/
 
-C:\Users\mohit_zwsxi5o\Desktop\Mohit\Trip Planner\static 
