@@ -99,7 +99,7 @@ class TripCrew:
         return result
 
 class TripAnswer:
-    def __init__(self, origin,no_of_days, destination, date_range, interests,budget,no_of_child,no_of_adults,query):
+    def __init__(self, origin,no_of_days, destination, date_range, interests,budget,no_of_child,no_of_adults,trip_planned,query):
         self.origin = origin
         self.destination = destination
         self.date_range = date_range
@@ -108,6 +108,7 @@ class TripAnswer:
         self.budget = budget
         self.no_of_child = no_of_child
         self.no_of_adults = no_of_adults
+        self.trip_planned = trip_planned
         self.query = query
 
     def run(self):
@@ -124,6 +125,7 @@ class TripAnswer:
             self.budget,
             self.no_of_child,
             self.no_of_adults,
+            self.trip_planned,
             self.query
             
         )

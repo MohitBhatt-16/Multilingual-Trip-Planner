@@ -11,6 +11,7 @@ from flask import Flask
 # from pinecone import Pinecone
 from PIL import Image
 import io
+from main import TripCrew, TripAnswer
 from datetime import datetime
 from deep_translator import GoogleTranslator
 from langdetect import detect
@@ -21,59 +22,56 @@ from markdownify import markdownify as md_to_text
 load_dotenv()
 llm = ChatGroq(temperature=0.7)
 
-template = """Give me answer to the question.
-Question : {question}"""
 
-prompt = PromptTemplate(
-    input_variables=['question'],
-    template = template,
-)
-llm_chain = prompt | llm
-
-### Multilingual part
+# Multilingual Functions
 def detect_language(text):
-    """Detect the language of the input text."""
     return detect(text)
 
 def translate_to_english(text, source_language):
-    """Translate the regional language to English using deep-translator."""
     return GoogleTranslator(source=source_language, target='en').translate(text)
-
-#def translate_to_regional(text, target_language):
-    # """Translate the English response back to the regional language using deep-translator."""
-    # return GoogleTranslator(source='en', target=target_language).translate(text)
 
 def split_text(text, max_chars=5000):
     chunks = []
     while len(text) > max_chars:
-        # Find the last space within the allowed limit to avoid cutting in the middle of a word
         split_index = text.rfind(' ', 0, max_chars)
         if split_index == -1:
-            split_index = max_chars  # If no space is found, just split at the limit
+            split_index = max_chars
         chunks.append(text[:split_index])
         text = text[split_index:]
-    chunks.append(text)  # Add the remaining part of the text
+    chunks.append(text)
     return chunks
 
-# def translate_to_regional(markdown_text, target_language):
-#     plain_text = str(markdown_text)
-#     # Split the plain text into chunks for translation if it exceeds 5000 characters
-#     chunks = split_text(plain_text)
+def translate_to_regional(markdown_text, target_language):
+    plain_text = md_to_text(markdown_text)
+    chunks = split_text(plain_text)
+    translated_chunks = [GoogleTranslator(source='en', target=target_language).translate(chunk) for chunk in chunks]
+    return ' '.join(translated_chunks)
+
+def process_input(text):
+    source_language = detect_language(text)
+    english_prompt = translate_to_english(text, source_language)
     
-#     translated_chunks = []
-    
-#     # Translate each chunk
-#     for chunk in chunks:
-#         translated_chunk = GoogleTranslator(source='en', target=target_language).translate(chunk)
-#         translated_chunks.append(translated_chunk)
-    
-#     # Join all translated chunks back together
-#     return ' '.join(translated_chunks)
+    template = """
+    You are a helpful assistant. Extract the following details from the text:
+    1. Origin (City of departure)
+    2. Destination (City of arrival)
+    3. Number of Days
+    4. Number of Adults
+    5. Number of Children
+    6. Budget
+    7. Travel Date Range
+    8. Interests
+
+    Text: {text}
+    Extracted Information:
+    """
+    prompt = PromptTemplate(input_variables=["text"], template=template)
+    llm_chain = prompt | llm
+    return llm_chain.invoke(english_prompt), source_language
 
 
-def translate_to_regional(text, target_language):
-    """Translate the English response back to the regional language using deep-translator."""
-    return GoogleTranslator(source='en', target=target_language).translate(text)
+
+
 
 
 
@@ -132,26 +130,30 @@ def chat():
     image_file = request.files.get("image")
     response_message = ""
 
-    if image_file:
-        # Generate a unique filename based on the current timestamp
-        filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{image_file.filename}"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        # Save the image
-        image_file.save(filepath)
-        
-        # Set response message with image path
-        response_message = f"<img src='/static/uploads/{filename}' alt='Uploaded Image' style='max-width: 450px; width: 100%; height: auto; border-radius: 5px; margin: 0px 0;' />"
-    elif user_message:
-        detected_language = detect_language(user_message)
-        converted_msg = translate_to_english(user_message, detected_language)
-        response_from_gpt = llm_chain.invoke(converted_msg)
-        print(response_from_gpt.content)
-        print(detected_language)
-        respond = translate_to_regional(response_from_gpt.content,detected_language)
-        response_message = f"{respond}"
+    extracted_info, source_language = process_input(user_message)
+    content = extracted_info['text'] if 'text' in extracted_info else extracted_info
 
-    return jsonify({"response": response_message})
+    lines = content.content.split("\n")
+    origin = lines[0].split(":")[1].strip() if len(lines) > 0 else None
+    destination = lines[1].split(":")[1].strip() if len(lines) > 1 else None
+    number_of_days = lines[2].split(":")[1].strip() if len(lines) > 2 else None
+    number_of_adults = lines[3].split(":")[1].strip() if len(lines) > 3 else None
+    number_of_children = lines[4].split(":")[1].strip() if len(lines) > 4 else None
+    budget = lines[5].split(":")[1].strip() if len(lines) > 5 else None
+    date_range = lines[6].split(":")[1].strip() if len(lines) > 6 else None
+    interests = lines[7].split(":")[1].strip() if len(lines) > 7 else None
+
+    trip_crew = TripCrew(origin, number_of_days, destination, date_range, interests, budget, number_of_children, number_of_adults)
+    result = trip_crew.run()
+        
+    # heading = translate_to_regional("Here is your whole trip plan specifically customized as per your choice", source_language)
+    # st.subheader(heading)
+    markdown_text = str(result)
+    translated_result = translate_to_regional(markdown_text, source_language)
+    
+        
+
+    return jsonify({"response": translated_result})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

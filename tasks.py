@@ -162,11 +162,11 @@ class TravelTasks:
         )
     
 
-    def answer_questions (self, agent, origin, cities, interests,no_of_days, travel_dates,budget,no_of_child,no_of_adults,query):
+    def answer_questions (self, agent, origin, cities, interests,no_of_days, travel_dates,budget,no_of_child,no_of_adults,trip_planned,query):
         return Task(
             description = dedent(f"""
                     **Task**: Answer travellers queries
-                    **Description**: Analyze traveler query and details and try to prepare the best answer containing solution of the travellers query
+                    **Description**: Analyze traveler query and details and try to prepare the best answer containing solution of the travellers query as per its details and the trip planned previously
                                  The answer should be uptodate and accurate and should answer all the queries of the traveller
                     **Parameters**:
                     - Origin: {origin}
@@ -177,6 +177,7 @@ class TravelTasks:
                     - Budget: {budget}
                     - No of Child: {no_of_child}
                     - No of Adults: {no_of_adults}
+                    - Trip Planned: {trip_planned}
                     - Query: {query}
 
                     **Note**: {self.__tip_section()}

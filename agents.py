@@ -147,7 +147,7 @@ class TravelAgents:
             role = "",
             backstory = dedent(
                 f"""
-                I have decades of experience answering travel and trip related questions of any domain user asks for                 """
+                I have decades of experience answering travel and trip related questions of any domain user asks for according to the trip planned."""
             ),
             goal = dedent(
                 f"""
