@@ -1,21 +1,23 @@
-import os
-from flask import Flask, render_template, jsonify, request, session
-from langchain_groq import ChatGroq
-from datetime import datetime
-from deep_translator import GoogleTranslator
-from langdetect import detect
+import streamlit as st
 from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_groq import ChatGroq
+from langdetect import detect
+from deep_translator import GoogleTranslator
+from main import TripCrew, TripAnswer
 from dotenv import load_dotenv
 from markdownify import markdownify as md_to_text
-from main import TripCrew, TripAnswer
-from markupsafe import Markup
-from markdown import markdown
+from datetime import date
 
-# Load environment variables
+# Get today's date
+today = date.today()
+
+# Print today's date
+print("Today's date is:", today)
+
+
+# Initialize the LLM
 load_dotenv()
-app = Flask(__name__)
-app.secret_key = '0ab694f8c46f9f7ca3266ad3f4efq3'  # Replace with a secure key
-
 llm = ChatGroq(temperature=0.7)
 
 # Multilingual Functions
@@ -64,21 +66,21 @@ def process_input(text):
     llm_chain = prompt | llm
     return llm_chain.invoke(english_prompt), source_language
 
-@app.route("/")
-def index():
-    return render_template('chat.html')
+# Initialize the Streamlit App
+st.title('_NextTrip.AI_ :sunglasses:')
+st.title("Plan your next adventure with ease!")
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    user_message = request.form.get("msg", "")
-    
+if "initialized" not in st.session_state:
+    st.session_state["initialized"] = False
+    st.session_state["trip_details"] = {}
 
-    if 'trip_details' not in session:
-        # First message: extract details and generate a trip plan
-        extracted_info, source_language = process_input(user_message)
-        
-        # Extract details from the response
+user_input = st.text_input("You:", key="user_input")
+
+if st.button("Send"):
+    if not st.session_state["initialized"]:
+        extracted_info, source_language = process_input(user_input)
         content = extracted_info['text'] if 'text' in extracted_info else extracted_info
+
         lines = content.content.split("\n")
         origin = lines[0].split(":")[1].strip() if len(lines) > 0 else None
         destination = lines[1].split(":")[1].strip() if len(lines) > 1 else None
@@ -89,61 +91,40 @@ def chat():
         date_range = lines[6].split(":")[1].strip() if len(lines) > 6 else None
         interests = lines[7].split(":")[1].strip() if len(lines) > 7 else None
 
-        
-
-        # Create the trip plan with TripCrew
-        trip_crew = TripCrew(origin, number_of_days, destination, date_range, interests, budget, number_of_children, number_of_adults)
-        result = trip_crew.run()
-
-        # Translate result if needed
-        markdown_text = str(result)
-        translated_result = translate_to_regional(markdown_text, source_language)
-        translated_result = translated_result.replace('* ', '  ')
-        translated_response = Markup(markdown(translated_result))
-
-        # Store trip details in the session
-        session['trip_details'] = {
-            'origin': origin,
-            'destination': destination,
-            'number_of_days': number_of_days,
-            'number_of_adults': number_of_adults,
-            'number_of_children': number_of_children,
-            'budget': budget,
-            'date_range': date_range,
-            'interests': interests,
-            'source_language': source_language,
-            'trip_planned' : translated_response
+        # Store trip details
+        st.session_state["trip_details"] = {
+            "origin": origin, "destination": destination, "number_of_days": number_of_days,
+            "number_of_adults": number_of_adults, "number_of_children": number_of_children,
+            "budget": budget, "date_range": date_range, "interests": interests
         }
 
-        return jsonify({"response": translated_response})
-    
+        trip_crew = TripCrew(origin, number_of_days, destination, date_range, interests, budget, number_of_children, number_of_adults)
+        result = trip_crew.run()
+        
+        heading = translate_to_regional("Here is your whole trip plan specifically customized as per your choice", source_language)
+        st.subheader(heading)
+        markdown_text = str(result)
+        translated_result = translate_to_regional(markdown_text, source_language)
+        st.markdown(translated_result, unsafe_allow_html=True)
+        
+        st.session_state["initialized"] = True
+
     else:
-        # Subsequent messages: Use TripAnswer for follow-up questions
-        trip_details = session['trip_details']
-        query = user_message
-        
-        # Run TripAnswer with the query and previously saved trip details
+        source_language = detect_language(user_input)
+        english_prompt = translate_to_english(user_input, source_language)
+
         trip_answer = TripAnswer(
-            origin=trip_details['origin'],
-            destination=trip_details['destination'],
-            interests=trip_details['interests'],
-            no_of_days=trip_details['number_of_days'],
-            date_range=trip_details['date_range'],
-            budget=trip_details['budget'],
-            no_of_child=trip_details['number_of_children'],
-            no_of_adults=trip_details['number_of_adults'],
-            trip_planned = trip_details['trip_planned'],
-            query=query
-            
+            origin=st.session_state["trip_details"]["origin"],
+            destination=st.session_state["trip_details"]["destination"],
+            interests=st.session_state["trip_details"]["interests"],
+            no_of_days=st.session_state["trip_details"]["number_of_days"],
+            date_range=st.session_state["trip_details"]["date_range"],
+            budget=st.session_state["trip_details"]["budget"],
+            no_of_child=st.session_state["trip_details"]["number_of_children"],
+            no_of_adults=st.session_state["trip_details"]["number_of_adults"],
+            query=english_prompt
         )
-        response = trip_answer.run()
-        
-        
-        markdown_text = str(response)
-        translated_result = translate_to_regional(markdown_text, trip_details['source_language'])
-        translated_response = Markup(markdown(translated_result))
-        return jsonify({"response": translated_response})
-
-
-if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+        result = trip_answer.run()
+        markdown_text = str(result)
+        translated_result = translate_to_regional(markdown_text, source_language)
+        st.markdown(translated_result, unsafe_allow_html=True)
