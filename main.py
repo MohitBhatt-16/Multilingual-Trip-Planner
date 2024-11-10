@@ -11,10 +11,17 @@ from main_helper import TripCrew, TripAnswer
 from markupsafe import Markup
 from markdown import markdown
 import re 
+import secrets
+
+# Generate a 32-byte (256-bit) random secret key, encoded in hexadecimal
+sk = secrets.token_hex(32)
+print("Your secret key is:", sk)
+
+
 # Load environment variables
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = '0ab694f8c46f9f7cjhbnkkn266ad3efq3'  # Replace with a secure key
+app.secret_key =  sk
 
 llm = ChatGroq(temperature=0.7)
 
