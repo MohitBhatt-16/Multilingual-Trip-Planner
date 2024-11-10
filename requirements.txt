@@ -1,7 +1,7 @@
 crewai
 dotenv
 textwrap
-langchain_groq
+langchain-groq
 tools_created.search_tools
 tools_created.calculator_tools
 langchain_google_genai.chat_models
