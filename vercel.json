@@ -1,11 +1,6 @@
 {
     "version": 2,
-    "builds": [
-      {
-        "src": "api/app.py",
-        "use": "@vercel/python"
-      }
-    ],
+    "buildCommand": "apt-get update && apt-get install -y libpq-dev && pip install -r requirements.txt",
     "routes": [
       {
         "src": "/(.*)",
