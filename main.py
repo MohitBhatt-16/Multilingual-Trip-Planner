@@ -8,9 +8,8 @@ from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 from markdownify import markdownify as md_to_text
 from main_helper import TripCrew, TripAnswer
-from markupsafe import Markup
 from markdown import markdown
-import re 
+from markupsafe import Markup
 import secrets
 
 # Generate a 32-byte (256-bit) random secret key, encoded in hexadecimal
@@ -108,11 +107,8 @@ def chat():
 
 
         # Fix line breaks for Markdown by replacing backslashes with two spaces and newline
-        translated_result = re.sub(r'\\\s+', '  \n', translated_result)
-
-        # Convert Markdown to HTML and ensure it's safely rendered
-        translated_response = Markup(markdown(translated_result))
-        # Store trip details in the session
+        html_result = markdown(translated_result, extensions=['extra', 'sane_lists'])  # Convert Markdown to HTML
+        translated_response = Markup(html_result) # Store trip details in the session
         session['trip_details'] = {
             'origin': origin,
             'destination': destination,

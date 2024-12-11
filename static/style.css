@@ -169,15 +169,41 @@ img {
 	cursor: pointer;
 	margin-right: 20px;
 }
-.msg_cotainer{
-	margin-top: auto;
-	margin-bottom: auto;
-	margin-left: 10px;
-	border-radius: 25px;
-	background-color: rgb(141, 198, 250);
-	padding: 10px;
-	position: relative;
+
+
+
+.msg_cotainer {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 25px;
+    background-color: rgb(141, 198, 250);
+    padding: 10px;
+    position: relative;
+    white-space: pre-wrap; /* Preserve line breaks */
+    overflow-wrap: break-word; /* Ensure long words wrap */
+    font-family: Arial, sans-serif; /* Consistent and readable font */
 }
+
+/* Add specific styling for bold subheadings */
+.msg_cotainer h3, .msg_cotainer strong {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50; /* Slightly darker color for contrast */
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+/* Add specific styling for bullet points */
+.msg_cotainer ul {
+    list-style-type: disc; /* Use disc bullets */
+    margin-left: 20px; /* Indent bullet points */
+}
+
+.msg_cotainer li {
+    line-height: 1.5; /* Increase spacing between bullet points */
+}
+
 .msg_cotainer_send{
 	margin-top: auto;
 	margin-bottom: auto;

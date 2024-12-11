@@ -88,7 +88,7 @@
         				success: function(response) {
         					// Append the bot's response as HTML (to support image rendering)
         					const botHtml = `<div class="d-flex justify-content-start mb-4"><div class="msg_cotainer">${response.response}</div></div>`;
-        					$("#messageFormeight").append(botHtml);
+$("#messageFormeight").append($(botHtml));
         				},
     				});
 				});
