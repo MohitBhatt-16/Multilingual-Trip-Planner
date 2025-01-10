@@ -13,11 +13,11 @@ The CREWAi and LLM-based Trip Planner is an intelligent, multilingual chatbot th
 - **Continuous Chat Interface**: Uses LLM to answer follow-up questions on the trip, allowing for seamless back-and-forth conversation.
 
 ### ***Itineary Planning Architecture***
-![Alt text]([(https://github.com/MohitBhatt-16/Multilingual-Trip-Planner/blob/main/templates/Agent%20Task%20Architecture%20for%20Itinerary.png)]
+![Alt text](https://github.com/MohitBhatt-16/Multilingual-Trip-Planner/blob/main/templates/Agent%20Task%20Architecture%20for%20Itinerary.png)
 
 ### ***Queries Architecture***
 
-![Alt text]([https://github.com/MohitBhatt-16/Multilingual-Trip-Planner/blob/main/templates/Agent%20Task%20Architecture%20for%20Queries.png)]
+![Alt text](https://github.com/MohitBhatt-16/Multilingual-Trip-Planner/blob/main/templates/Agent%20Task%20Architecture%20for%20Queries.png)
 ## ***Tech Stack***
 
 - **Backend**: Flask, CREWAi, and LangChain LLM (e.g., ChatGroq)
