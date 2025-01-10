@@ -1,4 +1,7 @@
 ﻿# ***CREWAi and LLM-based Multilingual Trip Planner***
+![Alt text](https://github.com/MohitBhatt-16/Multilingual-Trip-Planner/blob/main/templates/frontend.png)
+
+
 ![Alt text](https://github.com/MohitBhatt-16/Multilingual-Trip-Planner/blob/main/templates/Blank%20diagram.png)
 ## ***Overview***
 
